@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """Module: basic_auth"""
+import base64
+
 from api.v1.auth.auth import Auth
 
 
@@ -23,3 +25,23 @@ class BasicAuth(Auth):
         elif not authorization_header.startswith('Basic '):
             return None
         return authorization_header[6:]
+
+    def decode_base64_authorization_header(
+            self, base64_authorization_header: str
+    ) -> str:
+        """
+        Decode base64 sting to UTF8
+
+        :param base64_authorization_header: The base64 string to decode
+        :return: The decoded  value as UTF8 string
+        """
+        if not base64_authorization_header:
+            return None
+        elif not isinstance(base64_authorization_header, str):
+            return None
+        from base64 import b64decode
+        from binascii import Error
+        try:
+            return b64decode(base64_authorization_header).decode('utf-8')
+        except Error:
+            return None
