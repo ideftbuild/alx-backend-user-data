@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Module: auth"""
+"""Module: auth
+
+This module implements the Auth class, which is used to authenticate
+each request.
+"""
 from flask import request
 from typing import TypeVar, List
 
@@ -17,7 +21,7 @@ class Auth:
         path = path if path.endswith('/') else path + '/'
         return path not in excluded_paths
 
-    def authorization_header(self, request=None) -> str | None:
+    def authorization_header(self, request=None) -> str:
         """
         Retrieves information from the authorization header
         """
