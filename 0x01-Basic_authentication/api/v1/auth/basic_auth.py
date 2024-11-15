@@ -3,6 +3,7 @@
 import base64
 
 from api.v1.auth.auth import Auth
+from typing import TypeVar
 
 
 class BasicAuth(Auth):
@@ -51,6 +52,7 @@ class BasicAuth(Auth):
     ) -> (str, str):
         """
         Extract user email and password from decoded base64 string
+
         :param decoded_base64_authorization_header: The decoded base64 string
         :return: user email and password as a tuple
         """
@@ -61,3 +63,23 @@ class BasicAuth(Auth):
         if ':' not in decoded_base64_authorization_header:
             return None, None
         return tuple(decoded_base64_authorization_header.split(':'))
+
+    def user_object_from_credentials(
+            self, user_email: str, user_pwd: str
+    ) -> TypeVar('User'):
+        """
+        Retrieves User instance based on email and password
+
+        :param user_email: The user email
+        :param user_pwd: The user password
+        :return: The instance
+        """
+        from models.user import User
+
+        def validate(attr):
+            return attr and isinstance(attr, str)
+        if not validate(user_email) or not validate(user_pwd):
+            return None
+        return next(
+            (user for user in User.search({'email': user_email})
+             if user.is_valid_password(user_pwd)), None)
