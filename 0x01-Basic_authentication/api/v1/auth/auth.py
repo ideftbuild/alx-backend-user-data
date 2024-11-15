@@ -17,14 +17,16 @@ class Auth:
         path = path if path.endswith('/') else path + '/'
         return path not in excluded_paths
 
-    def authorization_header(self, request=None) -> str:
+    def authorization_header(self, request=None) -> str | None:
         """
         Retrieves information from the authorization header
         """
-        return request
+        if not request:
+            return None
+        return request.headers.gt('Authorization')
 
     def current_user(self, request=None) -> TypeVar('User'):
         """
         The current authenticated user
         """
-        return request
+        return None
