@@ -18,8 +18,20 @@ class Auth:
         """
         if not path or not excluded_paths:
             return True
-        path = path if path.endswith('/') else path + '/'
-        return path not in excluded_paths
+
+        # Normalize path to consistently handle trailing slashes
+        path = path.rstrip('/')
+
+        for exc_path in excluded_paths:
+            # Handle wildcard paths with ending '*'
+            if (exc_path.endswith('*')
+                    and path.startswith(exc_path.rstrip('*'))):
+                return False
+            # Handle exact path matches (ignoring trailing slashes)
+            if path == exc_path.rstrip('/'):
+                return False
+
+        return True  # Authentication required if not matche found
 
     def authorization_header(self, request=None) -> str:
         """
