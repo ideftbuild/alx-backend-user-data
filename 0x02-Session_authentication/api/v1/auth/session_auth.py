@@ -32,3 +32,16 @@ class SessionAuth(Auth):
             return None
 
         return self.user_id_by_session_id.get(session_id)
+
+
+    def current_user(self, request=None):
+        """
+        Retrieves the User instance based on a cookie value
+        :param request: The request object
+        :return: The User instance
+        """
+        session_id = self.session_cookie(request)
+        user_id = self.user_id_by_session_id.get(session_id)
+
+        from models.user import User
+        return User.get(user_id)
