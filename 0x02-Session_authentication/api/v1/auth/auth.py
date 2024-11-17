@@ -46,3 +46,16 @@ class Auth:
         The current authenticated user
         """
         return None
+
+    def session_cookie(self, request=None):
+        """
+        Retrieves the session cookie value from a request
+
+        :param request: The request object
+        :return: The sesion cookie value
+        """
+        if not request:
+            return None
+
+        from os import getenv
+        return request.cookies.get(getenv('SESSION_NAME', '_my_session_id'))
