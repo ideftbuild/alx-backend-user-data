@@ -44,3 +44,24 @@ class SessionAuth(Auth):
 
         from models.user import User
         return User.get(user_id)
+
+    def destroy_session(self, request=None):
+        """
+        Remove session from in memory storage
+
+        :param request:
+        :return:
+        """
+        if not request:
+            return None
+
+        session = self.session_cookie(request)
+        if not session:
+            return False
+
+        user_id = self.user_id_for_session_id(session)
+        if not user_id:
+            return False
+
+        self.user_id_by_session_id.pop(session)
+        return True
