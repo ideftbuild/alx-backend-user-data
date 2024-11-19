@@ -2,7 +2,9 @@
 """Module: filtered_logger"""
 import re
 import logging
-from typing import List
+from typing import List, Tuple
+
+PII_FIELDS = ('password', 'phone', 'email', 'ssn', 'name')
 
 
 def filter_datum(
@@ -23,8 +25,8 @@ class RedactingFormatter(logging.Formatter):
     FORMAT = "[HOLBERTON] %(name)s %(levelname)s %(asctime)-15s: %(message)s"
     SEPARATOR = ";"
 
-    def __init__(self, fields: List):
-        self.fields: List = fields
+    def __init__(self, fields: Tuple):
+        self.fields: List = list(fields)
         super(RedactingFormatter, self).__init__(self.FORMAT)
 
     def format(self, record: logging.LogRecord) -> str:
@@ -33,3 +35,19 @@ class RedactingFormatter(logging.Formatter):
         return filter_datum(
             self.fields, self.REDACTION, original_message, self.SEPARATOR
         )
+
+
+def get_logger() -> logging.Logger:
+    """Create a logger object and a handler set to level INFO
+    :return: logging.Logger object
+    """
+    logger = logging.getLogger("user_data")  # Create logger object
+    logger.setLevel(logging.INFO)  # Set message processing level
+    logger.propagate = False
+    # Create console handler
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)  # set handler level
+    ch.setFormatter(RedactingFormatter(PII_FIELDS))
+
+    logger.addHandler(ch)
+    return logger
