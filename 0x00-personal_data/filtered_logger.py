@@ -3,6 +3,9 @@
 import re
 import logging
 from typing import List, Tuple
+from mysql.connector import connect
+from mysql.connector.connection import MySQLConnection
+# from mysql.connector.pooling import PooledMySQLConnection
 
 PII_FIELDS = ('password', 'phone', 'email', 'ssn', 'name')
 
@@ -51,3 +54,20 @@ def get_logger() -> logging.Logger:
 
     logger.addHandler(ch)
     return logger
+
+
+def get_db() -> MySQLConnection:
+    """Connect to a database and return the connection object"""
+    from os import getenv
+    username = getenv('PERSONAL_DATA_DB_USERNAME', 'root')
+    password = getenv('PERSONAL_DATA_DB_PASSWORD', '')
+    host = getenv('PERSONAL_DATA_DB_HOST', 'localhost')
+    db = getenv('PERSONAL_DATA_DB_NAME')
+
+    return connect(
+        host=host,
+        username=username,
+        password=password,
+        database=db,
+        collation='utf8mb4_general_ci'
+    )
