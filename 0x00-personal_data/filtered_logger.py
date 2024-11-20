@@ -71,3 +71,19 @@ def get_db() -> MySQLConnection:
         database=db,
         collation='utf8mb4_general_ci'
     )
+
+
+def main():
+    """Obtain a database connection and retrieve all
+    rows from the users table"""
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute('SELECT * FROM users')
+    logger = get_logger()
+    for row in cursor:
+        logger.info("; ".join(f'{c[0]}={c[1]}' for c in row.items())
+                    + RedactingFormatter.SEPARATOR)
+
+
+if __name__ == '__main__':
+    main()
