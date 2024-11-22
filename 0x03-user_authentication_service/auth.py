@@ -37,7 +37,7 @@ class Auth:
             )
 
     def valid_login(self, email: str, password: str) -> bool:
-        """Check if user is registered
+        """Verify presence of User record in the database
         :return: True if the password is valid, False otherwise
         """
         from bcrypt import checkpw
