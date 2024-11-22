@@ -29,3 +29,18 @@ class Auth:
             return self._db.add_user(
                 email=email, hashed_password=str(_hash_password(password))
             )
+
+    def valid_login(self, email: str, password: str) -> bool:
+        """Check if user is registered
+        :return: True if the password is valid, False otherwise
+        """
+        from bcrypt import checkpw
+        from ast import literal_eval
+
+        try:
+            user = self._db.find_user_by(email=email)
+            return checkpw(
+                password.encode('utf-8'), literal_eval(user.hashed_password)
+            )
+        except NoResultFound:
+            return False
