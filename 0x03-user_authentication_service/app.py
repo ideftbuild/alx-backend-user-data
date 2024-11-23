@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Module: app"""
 
-from flask import Flask, jsonify, request, abort
+from flask import Flask, jsonify, request, abort, redirect
 from auth import Auth
 
 
@@ -17,7 +17,9 @@ def home():
 
 @app.route('/users', methods=['POST'], strict_slashes=False)
 def register_user():
-    """Register new user"""
+    """ POST /users
+    Register new user
+    """
     email = request.form.get('email')
     password = request.form.get('password')
 
@@ -30,7 +32,9 @@ def register_user():
 
 @app.route('/sessions', methods=['POST'], strict_slashes=False)
 def login():
-    """Authenticate user"""
+    """ POST /sessions
+    Login: Authenticate user
+    """
     email = request.form.get('email')
     password = request.form.get('password')
 
@@ -40,6 +44,20 @@ def login():
     response = jsonify({'email': email, 'message': 'logged in'})
     response.set_cookie('session_id', auth.create_session(email))
     return response
+
+
+@app.route('/sessions', methods=['DELETE'], strict_slashes=False)
+def logout():
+    """ DELETE /sessions
+    Logout: Remove User session
+    """
+    session_id = request.cookies.get('session_id')
+    user = auth.get_user_from_session_id(session_id)
+    if not user:
+        abort(403)
+
+    auth.destroy_session(user.id)
+    return redirect('/')
 
 
 if __name__ == '__main__':
