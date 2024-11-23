@@ -52,6 +52,9 @@ def logout():
     Logout: Remove User session
     """
     session_id = request.cookies.get('session_id')
+    if not session_id:
+        abort(403)
+
     user = auth.get_user_from_session_id(session_id)
     if not user:
         abort(403)
